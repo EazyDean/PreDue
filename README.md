@@ -1,2 +1,2 @@
-# Gantt
-Gantt app for HackAthon
+# PreDue
+Educational Gantt app for HackAthon
