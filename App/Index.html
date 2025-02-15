@@ -1,126 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Homework Gantt (Frappe Gantt + ICAL.js)</title>
-
-  <!-- 1. ICAL.js from jsDelivr (for parsing .ics) -->
-  <script src="https://cdn.jsdelivr.net/npm/ical.js@1.4.0/build/ical.js"></script>
-
-  <!-- 2. Frappe Gantt CSS & JS from unpkg -->
-  <link rel="stylesheet" href="https://unpkg.com/frappe-gantt/dist/frappe-gantt.css"/>
-  <script src="https://unpkg.com/frappe-gantt/dist/frappe-gantt.js"></script>
-
-  <style>
-    body {
-      margin: 0; 
-      font-family: Arial, sans-serif;
-    }
-    .container {
-      padding: 20px;
-    }
-    input[type="text"] {
-      width: 60%;
-      padding: 5px;
-    }
-    button {
-      padding: 5px 10px;
-      margin-left: 10px;
-    }
-    #gantt {
-      max-width: 100%;
-      height: 600px;
-      margin: 20px;
-    }
-  </style>
+  <title>ICS Calendar Parser</title>
+  <!-- Link to your external CSS file -->
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Import ical.js from a CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/ical.js@1.4.0/build/ical.min.js"></script>
 </head>
 <body>
   <div class="container">
-    <h1>Homework Gantt</h1>
-    <p>Enter the ICS feed URL (from Moodle/Canvas):</p>
-    <input id="icalUrl" type="text" placeholder="https://example.com/calendar.ics" />
-    <button id="loadButton">Load Chart</button>
+    <h1>ICS Calendar Parser</h1>
+    
+    <div class="input-section">
+      <label for="ics-url">ICS URL:</label><br>
+      <input
+        type="text"
+        id="ics-url"
+        value="https://eclass.srv.ualberta.ca/calendar/export_execute.php?userid=524488&authtoken=7bc5583c2d3c74612bdbf9d21d73d380de0950ef&preset_what=courses&preset_time=custom"
+      />
+      <button id="load-btn">Load and Parse ICS</button>
+    </div>
+
+    <h2>Parsed Events</h2>
+    <!-- Table for displaying event data -->
+    <table id="events-table">
+      <thead>
+        <tr>
+          <th>Summary</th>
+          <th>Start</th>
+          <th>End</th>
+          <th>Location</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <h2>Raw JSON Output</h2>
+    <!-- Scrollable container for raw JSON -->
+    <div class="pre-container">
+      <pre id="output">Parsed JSON output will appear here...</pre>
+    </div>
   </div>
 
-  <!-- This is where our Gantt chart will appear -->
-  <div id="gantt"></div>
-
-  <script>
-    document.getElementById('loadButton').addEventListener('click', () => {
-      const icalUrl = document.getElementById('icalUrl').value.trim();
-      if (!icalUrl) {
-        alert('Please enter a valid ICS URL.');
-        return;
-      }
-      fetchIcsAndRenderGantt(icalUrl);
-    });
-
-    async function fetchIcsAndRenderGantt(icalUrl) {
-      try {
-        const response = await fetch(icalUrl);
-        if (!response.ok) {
-          throw new Error("Fetching ICS failed. Possibly a CORS issue or invalid URL.");
-        }
-        const icalText = await response.text();
-
-        // Parse using ICAL.js
-        const jcalData = ICAL.parse(icalText);
-        const component = new ICAL.Component(jcalData);
-        const vevents = component.getAllSubcomponents('vevent');
-
-        // Convert each vevent into a Frappe Gantt task object
-        // Frappe Gantt expects: 
-        //   id, name, start, end, [progress], [dependencies]
-        const tasks = vevents.map((vevent, index) => {
-          const event = new ICAL.Event(vevent);
-          const startJSDate = event.startDate.toJSDate();
-          const endJSDate = event.endDate.toJSDate();
-
-          return {
-            id: event.uid || `task_${index}`,
-            name: event.summary || "No title",
-            start: formatDateIso(startJSDate),
-            end: formatDateIso(endJSDate),
-            progress: 0,           // or derive from your data
-            dependencies: "",      // can be a comma-separated list of other tasks’ IDs
-            description: event.description || "",
-          };
-        });
-
-        // Render the Gantt
-        // Clear out any old instance by just re-creating
-        document.getElementById('gantt').innerHTML = "";
-
-        new Gantt("#gantt", tasks, {
-          // Options:
-          view_mode: "Day", 
-          date_format: "YYYY-MM-DD",
-          custom_popup_html: function(task) {
-            // Optional: a popup that appears on hover/click
-            // Return a custom HTML string for more details
-            return `
-              <div style="padding:10px;">
-                <h5>${task.name}</h5>
-                <p><strong>Start:</strong> ${task.start}</p>
-                <p><strong>End:</strong> ${task.end}</p>
-                <p>${task.description}</p>
-              </div>
-            `;
-          }
-        });
-      } catch (err) {
-        console.error(err);
-        alert("Error: " + err.message);
-      }
-    }
-
-    // Utility to format a JS Date to YYYY-MM-DD (for Frappe Gantt)
-    function formatDateIso(date) {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    }
-  </script>
+  <!-- Link to your external JS file (load after the HTML so DOM elements exist) -->
+  <script src="main.js"></script>
 </body>
 </html>
