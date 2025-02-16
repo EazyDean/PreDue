@@ -99,6 +99,24 @@ async function fetchICS(url) {
             tableBody.appendChild(tr);
           });
           eventsTable.style.display = "table";
+          
+          // Convert events to tasks accepted by Frappe Gantt
+          const tasks = events.map((event, index) => ({
+            id: '' + (index + 1),
+            name: event.summary || 'No Summary',
+            start: new Date(event.start).toISOString().split('T')[0], // YYYY-MM-DD format
+            end: new Date(event.end).toISOString().split('T')[0],
+            progress: 0, // You may calculate or set a default progress
+            dependencies: ''
+          }));
+          
+          // Initialize the Gantt chart
+          const gantt = new Gantt("#gantt", tasks, {
+            view_mode: 'Day',
+            bar_height: 30,
+            padding: 18,
+            column_width: 45
+          });
         } else {
           outputElem.textContent += "\n\nNo events found in the ICS file.";
         }
@@ -114,4 +132,3 @@ async function fetchICS(url) {
   
   // Run init() once the DOM content is fully loaded
   document.addEventListener("DOMContentLoaded", init);
-  

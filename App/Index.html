@@ -2,15 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>ICS Calendar Parser</title>
+  <title>ICS Calendar Parser & Gantt Chart</title>
   <!-- Link to your external CSS file -->
   <link rel="stylesheet" href="styles.css" />
+  <!-- Frappe Gantt Stylesheet -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt/dist/frappe-gantt.css">
   <!-- Import ical.js from a CDN -->
   <script src="https://cdn.jsdelivr.net/npm/ical.js@1.4.0/build/ical.min.js"></script>
 </head>
 <body>
   <div class="container">
-    <h1>ICS Calendar Parser</h1>
+    <h1>ICS Calendar Parser & Gantt Chart</h1>
     
     <div class="input-section">
       <label for="ics-url">ICS URL:</label><br>
@@ -42,8 +44,14 @@
     <div class="pre-container">
       <pre id="output">Parsed JSON output will appear here...</pre>
     </div>
+
+    <h2>Gantt Chart</h2>
+    <!-- Container for the Gantt chart -->
+    <div id="gantt"></div>
   </div>
 
+  <!-- Import Frappe Gantt -->
+  <script src="https://cdn.jsdelivr.net/npm/frappe-gantt/dist/frappe-gantt.umd.js"></script>
   <!-- Link to your external JS file (load after the HTML so DOM elements exist) -->
   <script src="main.js"></script>
 </body>
