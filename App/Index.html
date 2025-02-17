@@ -3,17 +3,53 @@
 <head>
   <meta charset="UTF-8" />
   <title>ICS Calendar Parser & Gantt Chart</title>
-  <!-- Link to your external CSS file -->
-  <link rel="stylesheet" href="styles.css" />
-  <!-- Frappe Gantt Stylesheet -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt/dist/frappe-gantt.css">
-  <!-- Import ical.js from a CDN -->
   <script src="https://cdn.jsdelivr.net/npm/ical.js@1.4.0/build/ical.min.js"></script>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="container">
     <h1>ICS Calendar Parser & Gantt Chart</h1>
-    
+    <!-- Quickly injecting a padding. -->
+    <style>
+      .padding-px {
+        padding-top: 15px;
+        padding-bottom: 15px;
+      }
+    </style>
+    <h2 >Options:</h2>
+    <div class="slider-container">
+      <p>Default Starting Day Offset:</p>
+      <!-- Wrap slider and value box in a container with a fixed width -->
+      <div class="slider-wrapper" style="position: relative; width: 300px;">
+        <input
+          type="range"
+          id="dayOffsetSlider"
+          class="tSlider"
+          min="0"
+          max="30"
+          step="1"
+          value="5"
+          style="width: 100%;">
+          <div style="width: 100%; display: flex; justify-content: space-between; margin-top: 6px;">
+            <span>0</span>
+            <span>30</span>
+          </div>
+        <!-- White value box, initially hidden -->
+        <div id="sliderValueBox" style="
+          position: absolute;
+          top: 30px;
+          left: 0;
+          display: none;
+          background: white;
+          padding: 2px 5px;
+          border: 1px solid #ccc;
+          border-radius: 3px;
+          font-size: 12px;">
+        </div>
+      </div>
+    </div>    
+    <div class="padding-px"></div> <!-- If it works, it works. -->
     <div class="input-section">
       <label for="ics-url">ICS URL:</label><br>
       <input
@@ -30,7 +66,7 @@
       <thead>
         <tr>
           <th>Summary</th>
-          <th>Start</th>
+          <th>Start (Offset)</th>
           <th>End</th>
           <th>Location</th>
           <th>Description</th>
@@ -39,22 +75,17 @@
       <tbody></tbody>
     </table>
 
-    <h2>Raw JSON Output</h2>
-    <!-- Scrollable container for raw JSON -->
-    <div class="pre-container">
-      <pre id="output">Parsed JSON output will appear here...</pre>
-    </div>
-
+    
+     
     <h2>Gantt Chart</h2>
-    <!-- Container for the Gantt chart -->
     <div id="gantt"></div>
-    <!-- Ensure the download button is placed here -->
     <button id="download-btn">Download Updated .ics</button>
+    
   </div>
 
+  
   <!-- Import Frappe Gantt -->
   <script src="https://cdn.jsdelivr.net/npm/frappe-gantt/dist/frappe-gantt.umd.js"></script>
-  <!-- Link to your external JS file (load after the HTML so DOM elements exist) -->
   <script src="main.js"></script>
 </body>
 </html>
