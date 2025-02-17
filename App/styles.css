@@ -75,4 +75,19 @@ body {
     border: 1px solid #ccc;
     padding: 10px;
   }
-  
+
+/* Enhance left handle of Gantt bar for adjusting start date */
+.gantt .bar-wrapper .handle.left {
+  width: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  cursor: ew-resize;
+}
+
+/* Adjust Gantt grid header and cell styling for dynamic column widths */
+.gantt .grid .grid-header .grid-cell,
+.gantt .grid .grid-body .grid-row .grid-cell {
+  width: auto !important;
+  min-width: 60px; /* minimum width for single-day events */
+  padding: 5px 10px;
+  white-space: nowrap;
+}
