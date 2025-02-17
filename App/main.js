@@ -60,6 +60,17 @@ let tasks = [];
 let ganttChart = null;
 
 /**
+ * Helper function to format dates as "Month day at hh:mm AM/PM" (year removed)
+ * @param {Date} date - The date to format.
+ * @returns {string} The formatted date string.
+ */
+function formatDateTime(date) {
+  const options = { month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true };
+  const formatted = new Date(date).toLocaleString('en-US', options);
+  return formatted.replace(',', ' at');
+}
+
+/**
  * Initialize event listeners once the DOM is fully loaded.
  */
 function init() {
@@ -113,51 +124,14 @@ function init() {
       const jsonOutput = { jcalData, events };
       const jsonString = JSON.stringify(jsonOutput, null, 2);
 
-      // Display events in the table
       if (events.length > 0) {
-        events.forEach(event => {
-          const tr = document.createElement('tr');
-
-          // Summary
-          const summaryTd = document.createElement('td');
-          summaryTd.textContent = event.summary || "";
-          tr.appendChild(summaryTd);
-
-          // Start
-          const startTd = document.createElement('td');
-          startTd.textContent = new Date(event.start).toLocaleString();
-          tr.appendChild(startTd);
-
-          // End
-          const endTd = document.createElement('td');
-          endTd.textContent = new Date(event.end).toLocaleString();
-          tr.appendChild(endTd);
-
-          // Location
-          const locationTd = document.createElement('td');
-          locationTd.textContent = event.location || "";
-          tr.appendChild(locationTd);
-
-          // Description
-          const descTd = document.createElement('td');
-          descTd.textContent = event.description || "";
-          tr.appendChild(descTd);
-
-          tableBody.appendChild(tr);
-        });
-        eventsTable.style.display = "table";
-        
         // Convert events to tasks accepted by Frappe Gantt (include description)
         tasks = events.map((event, index) => {
-          // Convert start and end to Date objects
           let startDate = new Date(event.start);
           let endDate = new Date(event.end);
-
-          // If the event starts and ends on the same day, add one day to the end date
           if (startDate.getTime() === endDate.getTime()) {
             endDate.setDate(endDate.getDate() + 1);
           }
-        
           return {
             id: '' + (index + 1),
             name: event.summary || 'No Summary',
@@ -169,41 +143,84 @@ function init() {
           };
         });
         
-        // Initialize the Gantt chart with increased column width and a custom popup for dates
+        // Clear and rebuild the events table using the tasks array
+        tableBody.innerHTML = "";
+        tasks.forEach(task => {
+          const tr = document.createElement('tr');
+          
+          // Summary
+          const summaryTd = document.createElement('td');
+          summaryTd.textContent = task.name;
+          tr.appendChild(summaryTd);
+          
+          // Start using formatted date
+          const startTd = document.createElement('td');
+          startTd.textContent = formatDateTime(new Date(task.start));
+          tr.appendChild(startTd);
+          
+          // End using formatted date
+          const endTd = document.createElement('td');
+          endTd.textContent = formatDateTime(new Date(task.end));
+          tr.appendChild(endTd);
+          
+          // Description
+          const descTd = document.createElement('td');
+          descTd.textContent = task.description || "";
+          tr.appendChild(descTd);
+          
+          // Remove button cell
+          const removeTd = document.createElement('td');
+          const removeBtn = document.createElement('button');
+          removeBtn.textContent = "Remove";
+          removeBtn.addEventListener('click', () => {
+            // Remove the task from the global tasks array
+            tasks = tasks.filter(t => t.id !== task.id);
+            // Remove the row from the table
+            tr.remove();
+            // Refresh the Gantt chart with the updated tasks list
+            if (ganttChart) {
+              ganttChart.refresh(tasks);
+            }
+          });
+          removeTd.appendChild(removeBtn);
+          tr.appendChild(removeTd);
+          
+          tableBody.appendChild(tr);
+        });
+        eventsTable.style.display = "table";
+        
+        // Initialize the Gantt chart with the updated tasks
         ganttChart = new Gantt("#gantt", tasks, {
           view_mode: 'Day',
           arrow_curve: 5,
           bar_corner_radius: 3,
           bar_height: 30,
-          column_width: 45,           // Using demo default column width
-          container_height: 'auto',   // Dynamic height to fit tasks
+          column_width: 45,
+          container_height: 'auto',
           date_format: 'YYYY-MM-DD',
           upper_header_height: 45,
           lower_header_height: 30,
           padding: 18,
           today_button: true,
-          popup_on: 'click', // Allows click-popup as in the demo
+          popup_on: 'click',
           custom_popup_html: function(task) {
+            const startFormatted = new Date(task.start).toLocaleString('en-US', { month: 'long', day: 'numeric' });
+            const endFormatted = new Date(task.end).toLocaleString('en-US', { month: 'long', day: 'numeric' });
             return `<div class="details">
                       <strong>${task.name}</strong><br/>
-                      ${task.start} to ${task.end}
+                      ${startFormatted} to ${endFormatted}
                     </div>`;
           },
-          // When a task is dragged or resized, update its start/end dates in our tasks array.
-          // NOTE: We have removed the refresh() call here to prevent the chart from snapping back.
           on_date_change: (task, start, end) => {
             const idx = tasks.findIndex(t => t.id === task.id);
             if (idx !== -1) {
               tasks[idx].start = start.toISOString().split('T')[0];
               tasks[idx].end = end.toISOString().split('T')[0];
               console.log(`Task ${task.id} updated: start=${tasks[idx].start}, end=${tasks[idx].end}`);
-              // Do NOT call ganttChart.refresh(tasks) here!
-              // The dragging/resizing UI is already handled internally by Frappe Gantt.
             }
           }
         });
         
-        // Show the output container when events are loaded
         document.getElementById("output-container").style.display = "block";
         
         // Add double-click event listener on the Gantt container to allow manual editing of task details
