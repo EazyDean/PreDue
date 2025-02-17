@@ -91,3 +91,11 @@ body {
   padding: 5px 10px;
   white-space: nowrap;
 }
+
+/* Style Frappe Gantt events to blue */
+.gantt .bar-wrapper .bar {
+  fill: #007BFF !important;
+}
+.gantt .bar-wrapper .bar-progress {
+  fill: #0056b3 !important;
+}
