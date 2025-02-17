@@ -11,11 +11,15 @@
 </head>
 <body>
   <div class="container">
-    <!-- Display logo next to title -->
-    <h1>
+    <!-- Updated header to center the logo and title -->
+    <h1 style="text-align: center;">
       <img src="PreDue_Logo.png" alt="PreDue Logo" style="width:40px; vertical-align: middle; margin-right:10px;">
       PreDue
     </h1>
+    <!-- Added description above Options -->
+    <p style="text-align: center; font-size: 16px; margin-top: 10px;">
+      Welcome to PreDue! Enter your ICS link to display all quizzes, assignments, and more!
+    </p>
     <!-- Quickly injecting a padding. -->
     <style>
       .padding-px {
@@ -23,7 +27,7 @@
         padding-bottom: 15px;
       }
     </style>
-    <h2 >Options:</h2>
+    <h2>Options:</h2>
     <div class="slider-container">
       <p>Default Starting Day Offset:</p>
       <!-- Wrap slider and value box in a container with a fixed width -->
@@ -66,26 +70,29 @@
       <button id="load-btn">Load and Parse ICS</button>
     </div>
 
-    <h2>Parsed Events</h2>
-    <!-- Table for displaying event data -->
-    <table id="events-table">
-      <thead>
-        <tr>
-          <th>Summary</th>
-          <th>Start (Offset)</th>
-          <th>End</th>
-          <th>Location</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-
-    
-     
-    <h2>Gantt Chart</h2>
-    <div id="gantt"></div>
-    <button id="download-btn">Download Updated .ics</button>
+    <div id="output-container" style="display:none;">
+      <h2>Parsed Events</h2>
+      <!-- Table for displaying event data -->
+      <table id="events-table">
+        <thead>
+          <tr>
+            <th>Summary</th>
+            <th>Start (Offset)</th>
+            <th>End</th>
+            <th>Location</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      
+      <!-- Insert a small spacer between Parsed Events and Gantt Chart -->
+      <div style="margin-top:20px;"></div>
+      
+      <h2>Gantt Chart</h2>
+      <div id="gantt"></div>
+      <button id="download-btn">Download Updated .ics</button>
+    </div>
     
   </div>
 

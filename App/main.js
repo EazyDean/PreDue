@@ -203,6 +203,9 @@ function init() {
           }
         });
         
+        // Show the output container when events are loaded
+        document.getElementById("output-container").style.display = "block";
+        
         // Add double-click event listener on the Gantt container to allow manual editing of task details
         document.getElementById("gantt").addEventListener("dblclick", function(e) {
           const bar = e.target.closest('.bar-wrapper');
